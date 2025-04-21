@@ -1,1 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SCP-002 模擬互動</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #111;
+      color: #eee;
+      overflow-x: hidden;
+    }
+    #scp-room {
+      background-image: url('https://media.sketchfab.com/models/313b8f9404234b95ac8330aa7999c57f/thumbnails/9f8f39b466964c479cd87d51deeb4785/4c9b6279ccc442c4873ec4afcd50cdcc.jpeg');
+      background-size: cover;
+      background-position: center;
+      height: 60vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    .furniture {
+      width: 120px;
+      height: auto;
+      margin: 10px;
+      cursor: pointer;
+      animation: fadeIn 2s ease-in-out;
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .ui-panel {
+      padding: 1em;
+      background-color: #222;
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+    }
+    .ui-panel button {
+      margin: 0.5em;
+      padding: 0.5em 1em;
+      background-color: #555;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+    .ui-panel button:hover {
+      background-color: #777;
+    }
+    #story-log {
+      background: rgba(0,0,0,0.8);
+      padding: 1em;
+      max-height: 200px;
+      overflow-y: auto;
+      margin: 1em;
+      font-size: 14px;
+    }
+    @media (max-width: 768px) {
+      #scp-room {
+        flex-direction: column;
+      }
+      .furniture {
+        width: 90px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="scp-room"></div>
+  <div class="ui-panel">
+    <button onclick="dispatchDClass()">派遣 D-Class</button>
+    <button onclick="saveProgress()">儲存進度</button>
+    <button onclick="loadProgress()">載入進度</button>
+    <button onclick="playIntro()">播放開場劇情</button>
+  </div>
+  <div id="story-log"></div>
 
+  <audio id="ambientSound" loop autoplay>
+    <source src="https://cdn.pixabay.com/audio/2022/10/30/audio_2b31b6093d.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="eventSound">
+    <source src="https://cdn.pixabay.com/audio/2021/09/07/audio_2d4ce282b6.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const furnitureList = [
+      {
+        name: "絨毛沙發人偶",
+        src: "https://img.shoplineapp.com/media/image_clips/64267f4ddc878000117a9285/original.jpg?1680244557"
+      },
+      {
+        name: "扶手椅",
+        src: "https://family35.com/wp-content/uploads/2020/01/family35-kns-c3430ame.jpg"
+      },
+      {
+        name: "書桌",
+        src: "https://photo.greatliving.com.tw/photo/G1218G1218/imglist/G1218G1218_00-05.jpg"
+      },
+      {
+        name: "骨質吊燈嬰兒",
+        src: "https://png.pngtree.com/thumb_back/fh260/background/20230715/pngtree-minimalist-loft-interior-background-3d-rendering-of-chair-and-plant-on-image_3862993.jpg"
+      }
+    ];
+
+    let logBox = document.getElementById('story-log');
+    let room = document.getElementById('scp-room');
+
+    function log(msg) {
+      logBox.innerHTML += `<div>> ${msg}</div>`;
+      logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    function playSound() {
+      document.getElementById("eventSound").play();
+    }
+
+    function dispatchDClass() {
+      playSound();
+      const chosen = furnitureList[Math.floor(Math.random() * furnitureList.length)];
+      const img = document.createElement('img');
+      img.src = chosen.src;
+      img.className = 'furniture';
+      img.alt = chosen.name;
+      img.onclick = () => log(`你靠近了 ${chosen.name}，它低語著什麼...`);
+      room.appendChild(img);
+
+      const id = Math.floor(Math.random() * 10000);
+      log(`D-Class 編號 #${id} 進入 SCP-002 後失聯。房內出現變異家具：${chosen.name}`);
+      saveFurniture(img.src);
+    }
+
+    function saveFurniture(src) {
+      let saved = JSON.parse(localStorage.getItem('scp002_furniture') || '[]');
+      saved.push(src);
+      localStorage.setItem('scp002_furniture', JSON.stringify(saved));
+    }
+
+    function saveProgress() {
+      localStorage.setItem('scp002_storyLog', logBox.innerHTML);
+      alert('進度已儲存');
+    }
+
+    function loadProgress() {
+      const saved = localStorage.getItem('scp002_storyLog');
+      if (saved) logBox.innerHTML = saved;
+      const savedFurniture = JSON.parse(localStorage.getItem('scp002_furniture') || '[]');
+      room.innerHTML = '';
+      savedFurniture.forEach(src => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.className = 'furniture';
+        img.onclick = () => log(`你靠近了某個異常家具，它讓你頭痛欲裂...`);
+        room.appendChild(img);
+      });
+    }
+
+    function playIntro() {
+      let intro = [
+        "📖 開始進入 SCP-002 模擬環境...",
+        "該實體外觀為一巨大肉瘤狀物體，內部為類似公寓的空間。",
+        "所有內部家具皆疑似由吸收之生物改變而來。",
+        "基金會已進行多次實驗，導致多人失蹤。",
+        "你，即將派遣首位 D-Class 測試 SCP-002..."
+      ];
+      let i = 0;
+      const interval = setInterval(() => {
+        if (i < intro.length) {
+          log(intro[i]);
+          i++;
+        } else {
+          clearInterval(interval);
+        }
+      }, 1500);
+    }
+  </script>
+</body>
+</html>
