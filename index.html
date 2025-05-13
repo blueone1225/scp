@@ -95,11 +95,11 @@
         src: "https://img.shoplineapp.com/media/image_clips/64267f4ddc878000117a9285/original.jpg?1680244557"
       },
       {
-        name: "扶手椅",
+        name: "椅子",
         src: "https://family35.com/wp-content/uploads/2020/01/family35-kns-c3430ame.jpg"
       },
       {
-        name: "書桌",
+        name: "dexk",
         src: "https://photo.greatliving.com.tw/photo/G1218G1218/imglist/G1218G1218_00-05.jpg"
       },
       {
@@ -127,7 +127,7 @@
       img.src = chosen.src;
       img.className = 'furniture';
       img.alt = chosen.name;
-      img.onclick = () => log(`你靠近了 ${chosen.name}，它低語著什麼...`);
+      img.onclick = () => log(`你靠近了 ${chosen.name}，我也不知道誰在低語著什麼`);
       room.appendChild(img);
 
       const id = Math.floor(Math.random() * 10000);
@@ -162,10 +162,10 @@
 
     function playIntro() {
       let intro = [
-        "📖 開始進入 SCP-002 模擬環境...",
-        "該實體外觀為一巨大肉瘤狀物體，內部為類似公寓的空間。",
-        "所有內部家具皆疑似由吸收之生物改變而來。",
-        "基金會已進行多次實驗，導致多人失蹤。",
+        "📖 開始進入 SCP-002 模擬環境...(有一種莫名的氣息喘著)",
+        "該實體外觀為一巨大肉瘤狀物體，空氣中瀰漫著臭味跟恐懼，內部為類似公寓的空間。",
+        "所有內部家具皆疑似由吸收之生物改變而來，會發現骨骸與未知不明屍體。",
+        "基金會已進行多次非法實驗，導致多人失蹤。",
         "你，即將派遣首位 D-Class 測試 SCP-002..."
       ];
       let i = 0;
